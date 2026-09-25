@@ -61,11 +61,18 @@ function safeEqualHex(a,b) {
   } catch { return false; }
 }
 
-function cors(req,res,next){
-  res.setHeader("Access-Control-Allow-Origin", FRONTEND_URL);
-  res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers","Content-Type");
-  if(req.method==="OPTIONS") return res.sendStatus(204);
+function cors(req, res, next) {
+  const allowedOrigin = "https://minhanhmod.github.io";
+
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Max-Age", "86400");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
   next();
 }
 app.use(cors);
