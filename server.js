@@ -62,9 +62,11 @@ function safeEqualHex(a,b) {
 }
 
 function cors(req,res,next){
-  res.setHeader("Access-Control-Allow-Origin", "https://minhanhmod.github.io");
+  const allowedOrigin = new URL(FRONTEND_URL).origin;
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers","Content-Type");
+  res.setHeader("Access-Control-Max-Age","86400");
   if(req.method==="OPTIONS") return res.sendStatus(204);
   next();
 }
@@ -185,6 +187,36 @@ app.get("/api/stats",(req,res)=>{
     total,
     donors: donors.slice(0,30)
   });
+});
+
+// Shared public chat. Messages are kept in memory; use a database for permanent history.
+const chatMessages = [];
+const chatRate = new Map();
+const CHAT_MAX = 100;
+
+app.get("/api/chat",(req,res)=>{
+  res.json({messages: chatMessages.slice(-CHAT_MAX)});
+});
+
+app.post("/api/chat",(req,res)=>{
+  try {
+    const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+    const now = Date.now();
+    const last = chatRate.get(ip) || 0;
+    if(now - last < 1500) return res.status(429).json({success:false,message:"Bạn gửi quá nhanh, hãy chờ một chút."});
+
+    const name = String(req.body.name || "Ẩn danh").trim().slice(0,30) || "Ẩn danh";
+    const message = String(req.body.message || "").trim().slice(0,500);
+    if(!message) return res.status(400).json({success:false,message:"Tin nhắn không được để trống."});
+
+    chatRate.set(ip, now);
+    chatMessages.push({id: crypto.randomUUID(), name, message, createdAt: now});
+    if(chatMessages.length > CHAT_MAX) chatMessages.splice(0, chatMessages.length - CHAT_MAX);
+    res.json({success:true,messages:chatMessages.slice(-CHAT_MAX)});
+  } catch(e) {
+    console.error(e);
+    res.status(500).json({success:false,message:"Không gửi được tin nhắn."});
+  }
 });
 
 app.listen(PORT,()=>console.log(`Donate backend listening on ${PORT}`));
