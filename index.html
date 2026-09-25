@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MinhAnhMod — Pixel Donate</title>
+<style>
+:root{--ink:#11152c;--panel:#202653;--panel2:#171b3c;--cream:#fff5c7;--cyan:#4deeea;--mint:#78ff96;--pink:#ff6b9d;--gold:#ffd166;--line:#070915;--muted:#acb4db}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--cream);font-family:"Courier New",monospace;font-weight:bold;image-rendering:pixelated}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.3;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:24px 24px}
+.page{width:min(1120px,calc(100% - 28px));margin:auto;padding:36px 0 26px;position:relative}.pixel{border:4px solid var(--line);box-shadow:7px 7px 0 var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:15px}.mark{width:48px;height:48px;background:var(--cyan);border:4px solid var(--line);box-shadow:4px 4px 0 var(--pink);display:grid;place-items:center;color:var(--ink);font-size:24px}.eyebrow{font-size:11px;color:var(--cyan);letter-spacing:1.5px}.brand h1{font-size:23px;margin:3px 0 0;letter-spacing:1px}.online{font-size:11px;color:var(--mint);padding:10px 12px;background:#142b35}.online:before{content:"";display:inline-block;width:8px;height:8px;background:var(--mint);margin-right:8px;box-shadow:2px 2px 0 #0c1720;animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:.25}}
+.hero{background:var(--panel);padding:24px;margin-bottom:24px;overflow:hidden;position:relative}.hero:after{content:"+ + +";position:absolute;right:18px;top:8px;font-size:90px;color:#ffffff0b;line-height:1}.hero-grid{display:grid;grid-template-columns:1.4fr .75fr;gap:24px;position:relative}.label{font-size:11px;color:var(--muted);letter-spacing:1px}.amount{font-size:38px;color:var(--gold);margin:9px 0 5px;text-shadow:3px 3px 0 #a65e17}.sub{font-size:12px;color:var(--muted)}.percent{text-align:right;color:var(--mint);font-size:28px;text-shadow:3px 3px 0 #247948}.bar{grid-column:1/-1;height:24px;background:#0f1230;border:3px solid var(--line);padding:3px}.fill{height:100%;width:0%;background:repeating-linear-gradient(90deg,var(--cyan) 0 12px,#36bdb9 12px 16px);box-shadow:inset -4px 0 var(--cream)}
+.card{background:var(--panel2);padding:22px}.head{display:flex;align-items:center;gap:12px;border-bottom:3px dashed #566090;padding-bottom:15px;margin-bottom:19px}.icon{width:35px;height:35px;display:grid;place-items:center;color:var(--ink);background:var(--pink);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line)}.head h2{font-size:16px;margin:0}.head p{font-size:10px;margin:3px 0 0;color:var(--muted)}
+label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin:15px 0 8px}input,textarea{width:100%;font:700 14px "Courier New",monospace;color:var(--cream);background:#101431;border:3px solid var(--line);outline:none;padding:12px;box-shadow:inset 3px 3px #080b21}input:focus,textarea:focus{border-color:var(--cyan)}textarea{resize:vertical;min-height:88px}.quick{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:9px}.quick button,.copy{font:700 11px "Courier New",monospace;padding:10px 3px;border:3px solid var(--line);background:#333b70;color:var(--cream);box-shadow:3px 3px 0 var(--line);cursor:pointer}.quick button:hover{background:var(--pink);color:var(--ink)}button:active{transform:translate(3px,3px);box-shadow:none}.primary{margin-top:20px;width:100%;border:4px solid var(--line);background:var(--mint);color:var(--ink);font:900 15px "Courier New",monospace;letter-spacing:1px;padding:15px;box-shadow:6px 6px 0 var(--pink);cursor:pointer}.primary:hover{background:var(--cyan)}.primary:disabled{opacity:.55;cursor:wait}
+#qrPanel{display:none;margin-top:24px;background:#222957;padding:20px}.qr-layout{display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:center}.qr-box{background:#fff5c7;padding:10px;border:4px solid var(--line);box-shadow:5px 5px 0 var(--pink)}#qr{width:100%;display:block;image-rendering:pixelated}.details{font-size:12px;line-height:1.7}.code{color:var(--mint);font-size:19px;background:#101431;display:inline-block;padding:5px 8px;border:3px solid var(--line);margin:6px 0}.notice{color:var(--cyan);font-size:10px;margin-top:9px}.status{margin-top:14px;padding:10px;border:3px solid var(--line);background:#101431;color:var(--gold)}.success{color:var(--mint)}.error{color:var(--pink)}.footer{text-align:center;color:var(--muted);font-size:10px;margin-top:30px}.toast{display:none;position:fixed;bottom:23px;left:50%;transform:translateX(-50%);background:var(--mint);color:var(--ink);padding:12px 16px;z-index:3}
+@media(max-width:760px){.page{padding-top:20px}.top{align-items:flex-start}.online{display:none}.hero-grid,.qr-layout{grid-template-columns:1fr}.percent{text-align:left}.amount{font-size:29px}.quick{grid-template-columns:repeat(3,1fr)}.card,.hero{padding:18px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="top"><div class="brand"><div class="mark">♥</div><div><div class="eyebrow">COMMUNITY POWER-UP</div><h1>QUỸ DONATE MinhAnhMod</h1></div></div><div class="online pixel">PAYOS AUTO-CHECK</div></header>
+
+<section class="hero pixel"><div class="hero-grid">
+<div><div class="label">TỔNG NĂNG LƯỢNG ĐÃ QUYÊN GÓP</div><div class="amount" id="total">0đ</div><div class="sub">Mục tiêu: 5.000.000đ</div></div>
+<div><div class="label" style="text-align:right">TIẾN ĐỘ NHIỆM VỤ</div><div class="percent" id="percent">0%</div></div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+</div></section>
+
+<section>
+<div class="card pixel" id="formCard">
+<div class="head"><div class="icon">✦</div><div><h2>TẠO KHOẢN ỦNG HỘ</h2><p>Thanh toán an toàn qua payOS</p></div></div>
+<label for="name">TÊN HIỂN THỊ · KHÔNG BẮT BUỘC</label>
+<input id="name" maxlength="40" placeholder="Ẩn danh">
+<label for="amount">SỐ TIỀN ỦNG HỘ (VNĐ) *</label>
+<input id="amount" type="number" min="2000" step="1000" placeholder="Ví dụ: 50000">
+<div class="quick"><button data-v="20000">20K</button><button data-v="50000">50K</button><button data-v="100000">100K</button><button data-v="200000">200K</button><button data-v="500000">500K</button></div>
+<label for="message">LỜI NHẮN · KHÔNG BẮT BUỘC</label>
+<textarea id="message" maxlength="200" placeholder="Gửi lời nhắn tới đội ngũ phát triển..."></textarea>
+<button class="primary" id="create">TẠO QR PAYOS ▣</button>
+</div>
+
+<div id="qrPanel" class="pixel">
+<div class="head"><div class="icon" style="background:var(--mint)">✓</div><div><h2>QUÉT MÃ ĐỂ ỦNG HỘ</h2><p>QR được tạo riêng cho đơn này bởi payOS</p></div></div>
+<div class="qr-layout">
+<div class="qr-box"><img id="qr" alt="Mã QR thanh toán payOS"></div>
+<div class="details">
+<div class="label">ĐƠN THANH TOÁN</div><div class="code" id="code">---</div>
+<button class="copy" id="copyCode">SAO CHÉP</button>
+<br><br><div class="label">SỐ TIỀN</div><div id="orderAmount">---</div>
+<div class="status" id="status">ĐANG CHỜ THANH TOÁN...</div>
+<div class="notice">► Không sửa số tiền/nội dung của đơn. Sau khi chuyển khoản, hệ thống sẽ tự xác nhận qua webhook payOS.</div>
+<br><button class="copy" id="openCheckout">MỞ TRANG THANH TOÁN</button>
+</div></div></div>
+</section>
+<footer class="footer">© 2026 DELTA FUND · PAYOS · TỰ ĐỘNG ĐỐI SOÁT</footer>
+</main><div class="toast pixel" id="toast">ĐÃ SAO CHÉP!</div>
+
+<script>
+const API_BASE = "https://donate-q8nj.onrender.com";
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('vi-VN').format(n)+'đ';
+let currentOrderCode=null, pollTimer=null, checkoutUrl=null;
+document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>{$('amount').value=b.dataset.v});
+function toast(){const t=$('toast');t.style.display='block';setTimeout(()=>t.style.display='none',1700)}
+function copy(v){navigator.clipboard?.writeText(v);toast()}
+$('copyCode').onclick=()=>copy($('code').textContent);
+
+async function loadStats(){
+  try{
+    const r=await fetch(API_BASE+"/api/stats");
+    const s=await r.json();
+    const total=Number(s.total||0), target=5000000, pct=Math.min(100,Math.round(total/target*100));
+    $('total').textContent=fmt(total); $('percent').textContent=pct+"%"; $('fill').style.width=pct+"%";
+  }catch(e){}
+}
+
+async function checkPayment(){
+  if(!currentOrderCode)return;
+  try{
+    const r=await fetch(API_BASE+"/api/payment/"+encodeURIComponent(currentOrderCode));
+    const data=await r.json();
+    if(data.status==="PAID"){
+      $('status').className="status success";
+      $('status').textContent="✓ ĐÃ THANH TOÁN THÀNH CÔNG!";
+      clearInterval(pollTimer); loadStats();
+    }else if(data.status==="CANCELLED" || data.status==="EXPIRED"){
+      $('status').className="status error";
+      $('status').textContent="✕ ĐƠN ĐÃ HẾT HẠN / ĐÃ HỦY";
+      clearInterval(pollTimer);
+    }
+  }catch(e){}
+}
+
+$('openCheckout').onclick=()=>{if(checkoutUrl)window.open(checkoutUrl,'_blank','noopener')};
+
+$('create').onclick=async()=>{
+  const amount=Number($('amount').value);
+  if(!amount || amount<2000){$('amount').focus();$('amount').style.borderColor='var(--pink)';return}
+  $('amount').style.borderColor='var(--line)';
+  $('create').disabled=true;
+  $('create').textContent="ĐANG TẠO ĐƠN...";
+  try{
+    const r=await fetch(API_BASE+"/api/create-payment",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        amount,
+        name:$('name').value.trim(),
+        message:$('message').value.trim()
+      })
+    });
+    const data=await r.json();
+    if(!r.ok || !data.success) throw new Error(data.message||"Không tạo được đơn");
+    currentOrderCode=data.orderCode;
+    checkoutUrl=data.checkoutUrl;
+    $('code').textContent=String(data.orderCode);
+    $('orderAmount').textContent=fmt(amount);
+    $('qr').src=data.qrCode;
+    $('qrPanel').style.display='block';
+    $('status').className="status";
+    $('status').textContent="ĐANG CHỜ THANH TOÁN...";
+    $('qrPanel').scrollIntoView({behavior:'smooth',block:'center'});
+    clearInterval(pollTimer); pollTimer=setInterval(checkPayment,3000);
+  }catch(e){
+    alert(e.message||"Có lỗi xảy ra");
+  }finally{
+    $('create').disabled=false;
+    $('create').textContent="TẠO QR PAYOS ▣";
+  }
+};
+loadStats();
+</script>
+</body></html>
