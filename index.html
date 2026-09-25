@@ -16,6 +16,9 @@ label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin
 #qrPanel{display:none;margin-top:24px;background:#222957;padding:20px}.qr-layout{display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:center}.qr-box{background:#fff5c7;padding:10px;border:4px solid var(--line);box-shadow:5px 5px 0 var(--pink)}#qr{width:100%;display:block;image-rendering:pixelated}.details{font-size:12px;line-height:1.7}.code{color:var(--mint);font-size:19px;background:#101431;display:inline-block;padding:5px 8px;border:3px solid var(--line);margin:6px 0}.notice{color:var(--cyan);font-size:10px;margin-top:9px}.status{margin-top:14px;padding:10px;border:3px solid var(--line);background:#101431;color:var(--gold)}.success{color:var(--mint)}.error{color:var(--pink)}.footer{text-align:center;color:var(--muted);font-size:10px;margin-top:30px}.toast{display:none;position:fixed;bottom:23px;left:50%;transform:translateX(-50%);background:var(--mint);color:var(--ink);padding:12px 16px;z-index:3}
 
 .leaderboard{margin-top:24px;background:var(--panel2);padding:22px}.leaderboard-list{display:flex;flex-direction:column;gap:10px}.donor{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start;background:#101431;border:3px solid var(--line);padding:12px;box-shadow:3px 3px 0 var(--line)}.rank{font-size:18px;color:var(--gold);text-align:center}.donor-name{font-size:13px;color:var(--cream)}.donor-message{font-size:10px;color:var(--muted);font-weight:bold;margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}.donor-amount{font-size:13px;color:var(--mint);text-align:right;white-space:nowrap}.empty-board{color:var(--muted);font-size:11px;padding:12px 0}.board-refresh{font-size:10px;color:var(--muted);margin-top:10px}
+/* Chat widget */
+.chat-fab{position:fixed;right:24px;bottom:24px;z-index:20;border:4px solid var(--line);background:var(--cyan);color:var(--ink);font:900 13px "Courier New",monospace;padding:13px 16px;box-shadow:6px 6px 0 var(--pink);cursor:pointer}.chat-fab:hover{background:var(--mint)}
+.chat-box{display:none;position:fixed;right:24px;bottom:82px;width:min(360px,calc(100vw - 32px));z-index:21;background:var(--panel2);border:4px solid var(--line);box-shadow:8px 8px 0 var(--line)}.chat-box.open{display:block}.chat-head{display:flex;align-items:center;justify-content:space-between;background:var(--panel);padding:13px 14px;border-bottom:3px solid var(--line)}.chat-head strong{font-size:13px;color:var(--cream)}.chat-close{border:3px solid var(--line);background:var(--pink);color:var(--ink);font:900 13px "Courier New",monospace;width:32px;height:32px;cursor:pointer}.chat-body{padding:14px}.chat-body input{margin-bottom:10px}.chat-history{max-height:300px;overflow:auto;margin-bottom:10px}.chat-time{font-size:9px;color:var(--muted);font-weight:normal;margin-left:6px}.chat-message div{margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}.chat-message{background:#101431;border:3px solid var(--line);padding:10px;font-size:10px;line-height:1.6;color:var(--muted);margin-bottom:10px}.chat-form textarea{min-height:90px;margin:0}.chat-send{width:100%;margin-top:10px;border:3px solid var(--line);background:var(--mint);color:var(--ink);font:900 12px "Courier New",monospace;padding:11px;box-shadow:3px 3px 0 var(--pink);cursor:pointer}.chat-send:hover{background:var(--cyan)}
 @media(max-width:760px){.page{padding-top:20px}.top{align-items:flex-start}.online{display:none}.hero-grid,.qr-layout{grid-template-columns:1fr}.percent{text-align:left}.amount{font-size:29px}.quick{grid-template-columns:repeat(3,1fr)}.card,.hero{padding:18px}}
 </style>
 </head>
@@ -24,7 +27,7 @@ label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin
 <header class="top"><div class="brand"><div class="mark">♥</div><div><div class="eyebrow">COMMUNITY POWER-UP</div><h1>QUỸ DONATE MinhAnhMod</h1></div></div><div class="online pixel">PAYOS AUTO-CHECK</div></header>
 
 <section class="hero pixel"><div class="hero-grid">
-<div><div class="label">TỔNG NĂNG LƯỢNG ĐÃ QUYÊN GÓP</div><div class="amount" id="total">0đ</div><div class="sub">Mục tiêu: 5.000.000đ</div></div>
+<div><div class="label">TỔNG NĂNG LƯỢNG ĐÃ QUYÊN GÓP</div><div class="amount" id="total">0đ</div><div class="sub">Mục tiêu: 3.000.000đ</div></div>
 <div><div class="label" style="text-align:right">TIẾN ĐỘ NHIỆM VỤ</div><div class="percent" id="percent">0%</div></div>
 <div class="bar"><div class="fill" id="fill"></div></div>
 </div></section>
@@ -62,7 +65,17 @@ label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin
   <div class="board-refresh">► Chỉ các đơn đã thanh toán thành công mới xuất hiện.</div>
 </section>
 <footer class="footer">© 2026 MinhAnhMod · PAYOS · TỰ ĐỘNG ĐỐI SOÁT</footer>
-</main><div class="toast pixel" id="toast">ĐÃ SAO CHÉP!</div>
+</main><button class="chat-fab" id="chatFab" type="button">💬 CHAT</button>
+<div class="chat-box" id="chatBox" aria-hidden="true">
+  <div class="chat-head"><strong>💬 PHÒNG CHAT CHUNG</strong><button class="chat-close" id="chatClose" type="button">×</button></div>
+  <div class="chat-body">
+    <div class="chat-message">Mọi người có thể trò chuyện với nhau. Vui lòng lịch sự và không spam.</div>
+    <input id="chatName" maxlength="30" placeholder="Tên của bạn (ví dụ: MinhAnh)">
+    <div id="chatHistory" class="chat-history"></div>
+    <div class="chat-form"><textarea id="chatInput" maxlength="500" placeholder="Nhập tin nhắn..."></textarea><button class="chat-send" id="chatSend" type="button">GỬI TIN NHẮN</button></div>
+  </div>
+</div>
+<div class="toast pixel" id="toast">ĐÃ SAO CHÉP!</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -80,7 +93,7 @@ async function loadStats(){
   try{
     const r=await fetch(API_BASE+"/api/stats");
     const s=await r.json();
-    const total=Number(s.total||0), target=5000000, pct=Math.min(100,Math.round(total/target*100));
+    const total=Number(s.total||0), target=3000000, pct=Math.min(100,Math.round(total/target*100));
     $('total').textContent=fmt(total); $('percent').textContent=pct+"%"; $('fill').style.width=pct+"%";
   }catch(e){}
 }
@@ -162,6 +175,18 @@ $('create').onclick=async()=>{
     $('create').textContent="TẠO QR PAYOS ▣";
   }
 };
+
+const chatFab=$('chatFab'), chatBox=$('chatBox'), chatClose=$('chatClose'), chatInput=$('chatInput'), chatHistory=$('chatHistory'), chatSend=$('chatSend'), chatName=$('chatName');
+chatName.value=localStorage.getItem('donate_chat_name')||'';
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderChat(list){chatHistory.innerHTML=list.slice(-100).map(m=>{const d=new Date(m.createdAt);const time=d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});return `<div class="chat-message"><strong>${esc(m.name||'Ẩn danh')}</strong> <span class="chat-time">${time}</span><div>${esc(m.message)}</div></div>`}).join('');chatHistory.scrollTop=chatHistory.scrollHeight;}
+async function loadChat(){try{const r=await fetch(API_BASE+'/api/chat');if(!r.ok)return;const data=await r.json();renderChat(data.messages||[]);}catch(e){}}
+function toggleChat(open){chatBox.classList.toggle('open',open);chatBox.setAttribute('aria-hidden',open?'false':'true');if(open){loadChat();chatInput.focus();}}
+chatFab.onclick=()=>toggleChat(!chatBox.classList.contains('open'));
+chatClose.onclick=()=>toggleChat(false);
+chatSend.onclick=async()=>{const name=chatName.value.trim()||'Ẩn danh', msg=chatInput.value.trim();if(!msg)return;chatSend.disabled=true;try{const r=await fetch(API_BASE+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,message:msg})});const data=await r.json();if(!r.ok||!data.success)throw new Error(data.message||'Không gửi được tin nhắn');localStorage.setItem('donate_chat_name',name);chatInput.value='';renderChat(data.messages||[]);}catch(e){alert(e.message||'Không gửi được tin nhắn');}finally{chatSend.disabled=false;}};
+chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend.click();}});
+loadChat();setInterval(loadChat,3000);
 loadStats();
 loadLeaderboard();
 setInterval(loadLeaderboard, 10000);
