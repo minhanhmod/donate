@@ -53,8 +53,10 @@ label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin
 <br><button class="copy" id="openCheckout">MỞ TRANG THANH TOÁN</button>
 </div></div></div>
 </section>
-<footer class="footer">© 2026 DELTA FUND · PAYOS · TỰ ĐỘNG ĐỐI SOÁT</footer>
+<footer class="footer">© 2026 MinhAnhMod · PAYOS · TỰ ĐỘNG ĐỐI SOÁT</footer>
 </main><div class="toast pixel" id="toast">ĐÃ SAO CHÉP!</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 
 <script>
 const API_BASE = "https://donate-q8nj.onrender.com";
@@ -115,7 +117,18 @@ $('create').onclick=async()=>{
     checkoutUrl=data.checkoutUrl;
     $('code').textContent=String(data.orderCode);
     $('orderAmount').textContent=fmt(amount);
-    $('qr').src=data.qrCode;
+    QRCode.toDataURL(data.qrCode, {
+  width: 500,
+  margin: 1,
+  errorCorrectionLevel: "M"
+}, function(error, url) {
+  if (error) {
+    console.error(error);
+    throw new Error("Không thể tạo mã QR");
+  }
+
+  $('qr').src = url;
+});
     $('qrPanel').style.display='block';
     $('status').className="status";
     $('status').textContent="ĐANG CHỜ THANH TOÁN...";
