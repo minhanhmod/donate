@@ -117,18 +117,17 @@ $('create').onclick=async()=>{
     checkoutUrl=data.checkoutUrl;
     $('code').textContent=String(data.orderCode);
     $('orderAmount').textContent=fmt(amount);
-    QRCode.toDataURL(data.qrCode, {
-  width: 500,
-  margin: 1,
-  errorCorrectionLevel: "M"
-}, function(error, url) {
-  if (error) {
-    console.error(error);
-    throw new Error("Không thể tạo mã QR");
-  }
+    if (typeof QRCode === "undefined") {
+      throw new Error("Không tải được thư viện tạo mã QR");
+    }
 
-  $('qr').src = url;
-});
+    const qrUrl = await QRCode.toDataURL(data.qrCode, {
+      width: 500,
+      margin: 1,
+      errorCorrectionLevel: "M"
+    });
+
+    $('qr').src = qrUrl;
     $('qrPanel').style.display='block';
     $('status').className="status";
     $('status').textContent="ĐANG CHỜ THANH TOÁN...";
