@@ -14,6 +14,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.3;bac
 .card{background:var(--panel2);padding:22px}.head{display:flex;align-items:center;gap:12px;border-bottom:3px dashed #566090;padding-bottom:15px;margin-bottom:19px}.icon{width:35px;height:35px;display:grid;place-items:center;color:var(--ink);background:var(--pink);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line)}.head h2{font-size:16px;margin:0}.head p{font-size:10px;margin:3px 0 0;color:var(--muted)}
 label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin:15px 0 8px}input,textarea{width:100%;font:700 14px "Courier New",monospace;color:var(--cream);background:#101431;border:3px solid var(--line);outline:none;padding:12px;box-shadow:inset 3px 3px #080b21}input:focus,textarea:focus{border-color:var(--cyan)}textarea{resize:vertical;min-height:88px}.quick{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:9px}.quick button,.copy{font:700 11px "Courier New",monospace;padding:10px 3px;border:3px solid var(--line);background:#333b70;color:var(--cream);box-shadow:3px 3px 0 var(--line);cursor:pointer}.quick button:hover{background:var(--pink);color:var(--ink)}button:active{transform:translate(3px,3px);box-shadow:none}.primary{margin-top:20px;width:100%;border:4px solid var(--line);background:var(--mint);color:var(--ink);font:900 15px "Courier New",monospace;letter-spacing:1px;padding:15px;box-shadow:6px 6px 0 var(--pink);cursor:pointer}.primary:hover{background:var(--cyan)}.primary:disabled{opacity:.55;cursor:wait}
 #qrPanel{display:none;margin-top:24px;background:#222957;padding:20px}.qr-layout{display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:center}.qr-box{background:#fff5c7;padding:10px;border:4px solid var(--line);box-shadow:5px 5px 0 var(--pink)}#qr{width:100%;display:block;image-rendering:pixelated}.details{font-size:12px;line-height:1.7}.code{color:var(--mint);font-size:19px;background:#101431;display:inline-block;padding:5px 8px;border:3px solid var(--line);margin:6px 0}.notice{color:var(--cyan);font-size:10px;margin-top:9px}.status{margin-top:14px;padding:10px;border:3px solid var(--line);background:#101431;color:var(--gold)}.success{color:var(--mint)}.error{color:var(--pink)}.footer{text-align:center;color:var(--muted);font-size:10px;margin-top:30px}.toast{display:none;position:fixed;bottom:23px;left:50%;transform:translateX(-50%);background:var(--mint);color:var(--ink);padding:12px 16px;z-index:3}
+
+.leaderboard{margin-top:24px;background:var(--panel2);padding:22px}.leaderboard-list{display:flex;flex-direction:column;gap:10px}.donor{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start;background:#101431;border:3px solid var(--line);padding:12px;box-shadow:3px 3px 0 var(--line)}.rank{font-size:18px;color:var(--gold);text-align:center}.donor-name{font-size:13px;color:var(--cream)}.donor-message{font-size:10px;color:var(--muted);font-weight:bold;margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}.donor-amount{font-size:13px;color:var(--mint);text-align:right;white-space:nowrap}.empty-board{color:var(--muted);font-size:11px;padding:12px 0}.board-refresh{font-size:10px;color:var(--muted);margin-top:10px}
 @media(max-width:760px){.page{padding-top:20px}.top{align-items:flex-start}.online{display:none}.hero-grid,.qr-layout{grid-template-columns:1fr}.percent{text-align:left}.amount{font-size:29px}.quick{grid-template-columns:repeat(3,1fr)}.card,.hero{padding:18px}}
 </style>
 </head>
@@ -53,6 +55,12 @@ label{display:block;font-size:11px;color:var(--muted);letter-spacing:.8px;margin
 <br><button class="copy" id="openCheckout">MỞ TRANG THANH TOÁN</button>
 </div></div></div>
 </section>
+
+<section class="leaderboard card pixel" id="leaderboard">
+  <div class="head"><div class="icon" style="background:var(--gold)">★</div><div><h2>BẢNG VINH DANH NHÀ HẢO TÂM</h2><p>Tự động cập nhật khi payOS xác nhận thanh toán</p></div></div>
+  <div id="leaderboardList" class="leaderboard-list"><div class="empty-board">ĐANG TẢI DỮ LIỆU...</div></div>
+  <div class="board-refresh">► Chỉ các đơn đã thanh toán thành công mới xuất hiện.</div>
+</section>
 <footer class="footer">© 2026 MinhAnhMod · PAYOS · TỰ ĐỘNG ĐỐI SOÁT</footer>
 </main><div class="toast pixel" id="toast">ĐÃ SAO CHÉP!</div>
 
@@ -77,6 +85,21 @@ async function loadStats(){
   }catch(e){}
 }
 
+async function loadLeaderboard(){
+  try{
+    const r=await fetch(API_BASE+"/api/stats");
+    const s=await r.json();
+    const list=Array.isArray(s.donors)?s.donors:[];
+    const el=$('leaderboardList');
+    if(!list.length){el.innerHTML='<div class="empty-board">Chưa có lượt ủng hộ nào được xác nhận.</div>';return}
+    el.innerHTML=list.slice(0,30).map((d,i)=>{
+      const name=(d.name||'Ẩn danh').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const msg=(d.message||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      return `<div class="donor"><div class="rank">#${i+1}</div><div><div class="donor-name">${name}</div>${msg?`<div class="donor-message">“${msg}”</div>`:''}</div><div class="donor-amount">${fmt(Number(d.amount||0))}</div></div>`;
+    }).join('');
+  }catch(e){$('leaderboardList').innerHTML='<div class="empty-board">Không tải được bảng vinh danh.</div>';}
+}
+
 async function checkPayment(){
   if(!currentOrderCode)return;
   try{
@@ -85,7 +108,7 @@ async function checkPayment(){
     if(data.status==="PAID"){
       $('status').className="status success";
       $('status').textContent="✓ ĐÃ THANH TOÁN THÀNH CÔNG!";
-      clearInterval(pollTimer); loadStats();
+      clearInterval(pollTimer); loadStats(); loadLeaderboard();
     }else if(data.status==="CANCELLED" || data.status==="EXPIRED"){
       $('status').className="status error";
       $('status').textContent="✕ ĐƠN ĐÃ HẾT HẠN / ĐÃ HỦY";
@@ -120,8 +143,7 @@ $('create').onclick=async()=>{
     if (typeof QRCode === "undefined") {
       throw new Error("Không tải được thư viện tạo mã QR");
     }
-
-    $('qr').innerHTML = "";
+    $('qr').innerHTML = '';
     new QRCode($('qr'), {
       text: data.qrCode,
       width: 230,
@@ -141,5 +163,7 @@ $('create').onclick=async()=>{
   }
 };
 loadStats();
+loadLeaderboard();
+setInterval(loadLeaderboard, 10000);
 </script>
 </body></html>
